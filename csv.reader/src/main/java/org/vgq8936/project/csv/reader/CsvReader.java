@@ -10,6 +10,10 @@ import java.util.List;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
+import com.univocity.parsers.common.processor.BeanListProcessor;
+import com.univocity.parsers.csv.CsvParser;
+import com.univocity.parsers.csv.CsvParserSettings;
+
 public class CsvReader {
 	
 	private CSVFormat csvFormat;
@@ -42,5 +46,21 @@ public class CsvReader {
 		}
 		return rows;
 	}
+	
+	public <T> List<T> read(InputStream inputStream, Class<T> t) throws IOException {
+		BeanListProcessor<T> rowProcessor = new BeanListProcessor<T>(t);
 
+        CsvParserSettings parserSettings = new CsvParserSettings();
+        parserSettings.setProcessor(rowProcessor);
+        parserSettings.setHeaderExtractionEnabled(true);
+
+        CsvParser parser = new CsvParser(parserSettings);
+        Reader in = new InputStreamReader(inputStream);
+        parser.parse(in);
+
+        // The BeanListProcessor provides a list of objects extracted from the input.
+        List<T> beans = rowProcessor.getBeans();
+
+		return beans;
+	}
 }

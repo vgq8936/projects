@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-
 import org.apache.commons.csv.CSVFormat;
 import org.junit.Test;
 
@@ -92,5 +92,21 @@ public class CsvReaderTest {
 		csvReader.read(inputStream, csvColumns);
 		
     }
+	
+	@Test
+	public void testReadCsvWithDto() throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
+
+		InputStream inputStream = testHelper.fileInputStream("file1.csv");
+		
+		CSVFormat csvFormat = CSVFormat.EXCEL;
+		csvFormat = csvFormat.withFirstRecordAsHeader().withNullString("");
+		CsvReader csvReader = new CsvReader(csvFormat);
+		
+		List<FileDto> beans = csvReader.read(inputStream, FileDto.class);
+
+		for (FileDto fileDto : beans) {
+			System.out.println(fileDto);
+		}
+	}
 
 }
